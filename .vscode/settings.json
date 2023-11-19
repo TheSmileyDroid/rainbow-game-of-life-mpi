@@ -1,0 +1,9 @@
+{
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/home/gabriel/Projetos/pcd/rainbow",
+            "binaryPath": "/home/gabriel/Projetos/pcd/rainbow/rainbow",
+            "binaryArgs": []
+        }
+    ]
+}
