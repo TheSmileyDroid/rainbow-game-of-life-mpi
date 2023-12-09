@@ -4,7 +4,7 @@ TARGET = rainbow
 ARGS = 50 50
 
 run: $(TARGET).out
-	mpirun -n 8 --oversubscribe ./$(TARGET).out $(ARGS)
+	mpirun -n 4 --oversubscribe ./$(TARGET).out $(ARGS)
 
 all: $(TARGET).out
 

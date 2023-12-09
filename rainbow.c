@@ -93,14 +93,23 @@ void iterate(float **grid, float **newgrid, int i, int j) {
   }
 }
 
-int numberOfCells(float **grid) {
+int numberOfCells(float **grid, int start_line, int stop_line) {
   int cells = 0;
-  for (int i = 0; i < n; i++) {
+  for (int i = start_line; i < stop_line; i++) {
     for (int j = 0; j < n; j++) {
       if (grid[i][j] > 0.0f) {
         cells++;
       }
     }
+  }
+  if (rank == 0) {
+    for (int k = 1; k < size; k++) {
+      int res;
+      MPI_Recv(&res, 1, MPI_INT, k, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+      cells += res;
+    }
+  } else {
+    MPI_Send(&cells, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
   }
   return cells;
 }
@@ -255,7 +264,7 @@ int getResult(void (*addPatterns)(float **grid), int start_line, int stop_line,
     }
   }
 
-  MPI_Barrier(MPI_COMM_WORLD);
+  // MPI_Barrier(MPI_COMM_WORLD);
 
   gettimeofday(&end, NULL);
   printf("Tempo de execução: %ld microssegundos\n",
@@ -268,7 +277,7 @@ int getResult(void (*addPatterns)(float **grid), int start_line, int stop_line,
 
   printGrid(grid, i, start_line, stop_line);
 
-  int cells = numberOfCells(grid);
+  int cells = numberOfCells(grid, start_line, stop_line);
 
   for (int i = 0; i < n; i++) {
     free(grid[i]);
@@ -310,6 +319,10 @@ int main(int argc, char *argv[]) {
   printf("Processo %d: linhas %d a %d\n", rank, start_line, stop_line);
 
   int result1 = getResult(testOne, start_line, stop_line, iternum);
+
+  if (rank == 0) {
+    printf("Celulas vivas: %d\n", result1);
+  }
 
   MPI_Finalize();
   return 0;
