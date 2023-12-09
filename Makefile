@@ -1,6 +1,10 @@
 CC = mpicc
 CFLAGS = -g -Wall
 TARGET = rainbow
+ARGS = 50 50
+
+run: $(TARGET).out
+	mpirun -n 8 --oversubscribe ./$(TARGET).out $(ARGS)
 
 all: $(TARGET).out
 
