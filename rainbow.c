@@ -5,6 +5,7 @@
  * Gabriel Henrique Silva
  */
 
+#include <mpi.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
@@ -12,9 +13,7 @@
 #include <unistd.h>
 
 #define ITERNUM 50
-#define N 2048
-#define USEC 1000000
-#define SLEEP_TIME 0.001
+#define N 25
 
 float getCell(float **grid, int i, int j) {
   return grid[(i + N) % N][(j + N) % N];
@@ -109,6 +108,9 @@ void clearStdout() { printf("\033[H\033[J"); }
 
 void printGrid(float **grid, int i, int stop) {
   printf("Número de Células: %d \n", numberOfCells(grid));
+  if (stop >= N) {
+    stop = N;
+  }
   for (int i = 0; i < stop; i++) {
     printf("|");
     for (int j = 0; j < stop; j++) {
@@ -174,15 +176,10 @@ int getResult(void (*addPatterns)(float **grid)) {
         iterate(grid, newgrid, i, j);
       }
     }
-
-    if (i < 6) {
-      printGrid(grid, 0, 50);
-    }
     if (i % 100 == 0) {
       printf("Iteração: %d\n", i);
     }
     swap(&grid, &newgrid);
-    // usleep(USEC * SLEEP_TIME);
   }
 
   gettimeofday(&end, NULL);
@@ -190,7 +187,7 @@ int getResult(void (*addPatterns)(float **grid)) {
          ((end.tv_sec * 1000000 + end.tv_usec) -
           (start.tv_sec * 1000000 + start.tv_usec)));
 
-  // printGrid(grid, 2000);
+  printGrid(grid, 0, 2000);
 
   int cells = numberOfCells(grid);
 
@@ -212,9 +209,16 @@ void testOne(float **grid) {
 }
 
 int main(int argc, char *argv[]) {
+  MPI_Init(&argc, &argv);
+  int rank, size;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  printf("Processo %d de %d\n", rank, size);
+
   int result1 = getResult(testOne);
 
   printf("Número final de células: %d\n", result1);
 
+  MPI_Finalize();
   return 0;
 }
