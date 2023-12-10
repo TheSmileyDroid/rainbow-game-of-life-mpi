@@ -271,11 +271,11 @@ int getResult(void (*addPatterns)(float **grid), int start_line, int stop_line,
          ((end.tv_sec * 1000000 + end.tv_usec) -
           (start.tv_sec * 1000000 + start.tv_usec)));
 
-  fflush(stdout);
+  // fflush(stdout);
 
-  MPI_Barrier(MPI_COMM_WORLD);
+  // MPI_Barrier(MPI_COMM_WORLD);
 
-  printGrid(grid, i, start_line, stop_line);
+  // printGrid(grid, i, start_line, stop_line);
 
   int cells = numberOfCells(grid, start_line, stop_line);
 

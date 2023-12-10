@@ -1,12 +1,15 @@
 CC = mpicc
 CFLAGS = -g -Wall
 TARGET = rainbow
-ARGS = 50 50
+ARGS = 2000 2048
+NP = 4
 
-run: $(TARGET).out
-	mpirun -n 4 --oversubscribe ./$(TARGET).out $(ARGS)
 
 all: $(TARGET).out
+
+run: $(TARGET).out
+	mpirun -n $(NP) --oversubscribe ./$(TARGET).out $(ARGS)
+
 
 $(TARGET).out: $(TARGET).c
 	$(CC) $(CFLAGS) -o $(TARGET).out $(TARGET).c
